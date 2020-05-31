@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.TreeMap;
 
-public class Ejercicio1 extends Formulas {
+public class Ejercicio1{
 
 	public Ejercicio1() {}
 	
@@ -32,8 +32,9 @@ public class Ejercicio1 extends Formulas {
 	}
 	
     private double getPearson(int [][]img1, int[][]img2) {
-    	double media1= this.getMedia(img1);///de donde saca el getMedia?
-    	double media2= this.getMedia(img2);
+    	Formulas f= new Formulas();
+    	double media1= f.getMedia(img1);
+    	double media2= f.getMedia(img2);
     	double acum1=0;
     	double acum2=0;
     	double acum3=0;

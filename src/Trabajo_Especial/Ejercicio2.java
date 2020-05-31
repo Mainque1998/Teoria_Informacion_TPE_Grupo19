@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.TreeMap;
 
-public class Ejercicio2 extends Main {
+public class Ejercicio2 {
 
 	public Ejercicio2() {}
 
