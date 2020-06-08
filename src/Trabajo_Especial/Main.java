@@ -2,6 +2,7 @@ package Trabajo_Especial;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 public class Main {
 
@@ -38,15 +39,15 @@ public class Main {
         BufferedImage imgej2 = imagen.cargarImagen(willej2);
         int[][] matrizWillej2= imagen.cargarMatriz(imgej2);
         
-        /*String willC2 = "C:/Users/usuario/Downloads/ImagenesWill/Will_Canal2.bmp";///revisar luego el separeitor
+        /*String willC2 = "ImagenesWill"+ File.separator+"Will_Canal2.bmp";
         BufferedImage imgC2 = imagen.cargarImagen(willC2);
         int[][] matrizWillC2= imagen.cargarMatriz(imgC2);
         
-        String willC10 = "C:/Users/usuario/Downloads/ImagenesWill/Will_Canal10.bmp";///revisar luego el separeitor
+        String willC10 = "ImagenesWill"+ File.separator+"Will_Canal10.bmp";
         BufferedImage imgC10 = imagen.cargarImagen(willC10);
         int[][] matrizWillC10= imagen.cargarMatriz(imgC10);
         
-        String willC8 = "C:/Users/usuario/Downloads/ImagenesWill/Will_Canal8.bmp";///revisar luego el separeitor
+        String willC8 = "ImagenesWill"+ File.separator+"Will_Canal8.bmp";
         BufferedImage imgC8 = imagen.cargarImagen(willC8);
         int[][] matrizWillC8= imagen.cargarMatriz(imgC8);*/
         ///FIN DE CARGA DE MATRIZ
@@ -57,7 +58,15 @@ public class Main {
         
         Ejercicio2 e2= new Ejercicio2();
         e2.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar el resultado de ejercicio1 y no "matrizWill1", o sea hacerlo dinamico
+        
+        Ejercicio3 e3= new Ejercicio3();
+        try {///AGREGADO PARA EL ARCH
+			e3.ejecutar(matrizWillOriginal);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         ///FIN DE EJECUCION DE EJERCICIOS
         
     }
+
 }
