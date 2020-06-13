@@ -39,7 +39,7 @@ public class Main {
         BufferedImage imgej2 = imagen.cargarImagen(willej2);
         int[][] matrizWillej2= imagen.cargarMatriz(imgej2);
         
-        /*String willC2 = "ImagenesWill"+ File.separator+"Will_Canal2.bmp";
+        String willC2 = "ImagenesWill"+ File.separator+"Will_Canal2.bmp";
         BufferedImage imgC2 = imagen.cargarImagen(willC2);
         int[][] matrizWillC2= imagen.cargarMatriz(imgC2);
         
@@ -49,7 +49,7 @@ public class Main {
         
         String willC8 = "ImagenesWill"+ File.separator+"Will_Canal8.bmp";
         BufferedImage imgC8 = imagen.cargarImagen(willC8);
-        int[][] matrizWillC8= imagen.cargarMatriz(imgC8);*/
+        int[][] matrizWillC8= imagen.cargarMatriz(imgC8);
         ///FIN DE CARGA DE MATRIZ
         
         ///EJECUCION DE EJERCICIOS
@@ -57,14 +57,17 @@ public class Main {
         e1.ejecutar(matrizWillOriginal, matrizWill1, matrizWill2, matrizWill3, matrizWill4, matrizWill5);
         
         Ejercicio2 e2= new Ejercicio2();
-        e2.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar el resultado de ejercicio1 y no "matrizWill1", o sea hacerlo dinamico
+        e2.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar por parametro el resultado de ejercicio1 y no "matrizWill1"
         
         Ejercicio3 e3= new Ejercicio3();
         try {///AGREGADO PARA EL ARCH
-			e3.ejecutar(matrizWillOriginal);
+			e3.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar por parametro el resultado de ejercicio1 y no "matrizWill1"
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+        
+        
+        
         ///FIN DE EJECUCION DE EJERCICIOS
         
     }

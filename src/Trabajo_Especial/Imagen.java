@@ -30,6 +30,17 @@ public class Imagen {
                 m[j][i] = color.getBlue();
             }
         return m;
-    }	
+    }
+
+    public void generarImagen(int [] [] matriz, String path) {
+    	BufferedImage img = new BufferedImage(1310, 1700, BufferedImage.TYPE_INT_RGB);
+		for(int x = 0; x < img.getWidth(); x++) 
+		   for(int y = 0; y < img.getHeight(); y++) {
+			   Color color = new Color (matriz[y][x] , matriz[y][x], matriz[y][x]);
+			   img.setRGB(x,y,color.getRGB());
+		   }
+		try {ImageIO.write(img, "bmp", new File(path));}
+		catch (IOException e) {System.out.println("Error de escritura");}
+    }
 	
 }
