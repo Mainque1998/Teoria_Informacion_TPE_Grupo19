@@ -10,7 +10,7 @@ public class Ejercicio1{
 	
 	public void ejecutar(int [][]matrizWillOriginal, int [][]matrizWill1, int [][]matrizWill2, int [][]matrizWill3, int [][]matrizWill4, int [][]matrizWill5) {
 		PrintWriter out = null;
-		try {out = new PrintWriter("ejercicio1.txt");}
+		try {out = new PrintWriter("Ejercicio1.txt");}
 		catch (FileNotFoundException e) {e.printStackTrace();}
 		
         double p1=  this.getPearson(matrizWillOriginal, matrizWill1);

@@ -66,10 +66,9 @@ public class Main {
 			e.printStackTrace();
 		}
         
-        
-        
+        Ejercicio4 e4= new Ejercicio4();
+        e4.ejecutar(matrizWillOriginal, matrizWillC2, matrizWillC8, matrizWillC10);
         ///FIN DE EJECUCION DE EJERCICIOS
-        
     }
 
 }

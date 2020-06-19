@@ -10,7 +10,7 @@ public class Ejercicio2 {
 
 	public void ejecutar(int [][]matrizWillOriginal, int [][]matrizWillMasParecido, int [][]matrizWillej2) {
 		PrintWriter out = null;
-		try {out = new PrintWriter("ejercicio2.txt");}
+		try {out = new PrintWriter("Ejercicio2.txt");}
 		catch (FileNotFoundException e) {e.printStackTrace();}
 		
 		Formulas f = new Formulas();

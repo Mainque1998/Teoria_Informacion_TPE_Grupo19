@@ -1,29 +1,45 @@
 package Trabajo_Especial;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.TreeMap;
 
 public class Ejercicio4 {
 	
-	//public Ejercicio4() {}
+	public Ejercicio4() {}
 
-	private final static double epsilon = 0.0001;
-	private final static int min_muestras = 500;
+	private final double ERROR = 0.0001;
+	private final int MIN_MUESTRAS = 10000;
 	
-	public static void main(String[] args) {
+	public void ejecutar(int[][] matrizIn, int[][] matrizC1, int[][] matrizC2, int[][] matrizC3) {
+		Formulas f= new Formulas();
+		TreeMap<Integer, Integer> dIn = f.getDistribucion(matrizIn);
+		PrintWriter out = null;
+		try {out = new PrintWriter("Ejercicio4_IncisoB.txt");}
+		catch (FileNotFoundException e) {e.printStackTrace();}
 		
-		int[][] me = {{5,3,4},{3,2,1},{2,2,2}};
-		int[][] ms = {{5,2,3},{1,2,1},{2,3,1}};
-		imprimirMatriz(me); imprimirMatriz(ms);
-		TreeMap<Integer, Integer> de = getDistribucion(me);
-		TreeMap<Integer, Integer> ds = getDistribucion(ms);
-		float[][] matriz= generarMatrizTransicional(me,de,ms,ds);
-		///INCISO B
-		System.out.println("ruido de la matriz: "+calcularRuido(matriz, de));
-		///FIN INCISO B
+		///canal 2
+		TreeMap<Integer, Integer> dOut = f.getDistribucion(matrizC1);
+		float[][] matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC1, dOut);
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C2.txt");///GENERA ARCH MATRIZ
+		out.println("Ruido del canal 2: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));
 		
+		///canal 8
+		dOut = f.getDistribucion(matrizC1);
+		matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC2, dOut);
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C8.txt");///GENERA ARCH MATRIZ
+		out.println("Ruido del canal 8: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));
+		
+		///canal 10
+		f.getDistribucion(matrizC1);
+		matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC3, dOut);
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C10.txt");///GENERA ARCH MATRIZ
+		out.println("Ruido del canal 10: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));			
+		
+		out.close();
 	}
 	
-	public static float[][] generarMatrizTransicional(int[][] mat_entrada, TreeMap<Integer, Integer> dist_entrada, int[][] mat_salida, TreeMap<Integer, Integer> dist_salida) {
+	public float[][] generarMatrizTransicional(int[][] mat_entrada, TreeMap<Integer, Integer> dist_entrada, int[][] mat_salida, TreeMap<Integer, Integer> dist_salida) {
 		
 		//INICIALIZO LA MATRIZ CON TODOS 0
 		float[][] matriz = new float[dist_salida.size()+1][dist_entrada.size()+1];
@@ -33,7 +49,7 @@ public class Ejercicio4 {
 			}
 		}
 		
-		//PONGO TODOS LOS COLORES DE LAS IMAGENES EN LAS COLUMNAS Y FILAS DE LA MATRIZ
+		//PONGO TODOS LOS TONOS DE COLORES DE LAS IMAGENES EN LA 1ER COLUMNA Y EN LA 1ER FILA DE LA MATRIZ
 		int i=1;
 		for (int e: dist_entrada.keySet()) {
 			matriz[0][i]=e;
@@ -59,129 +75,133 @@ public class Ejercicio4 {
 			int total = 0;
 			for (j=1; j<matriz.length; j++) {
 				total+=matriz[j][i];
-			}
+			}///consigue la sumatoria de la columna
 			for (j=1; j<matriz.length; j++) {
 				matriz[j][i]=(float)matriz[j][i]/total;
-			}
+			}///divide cada termino por el total de la columna
 		}
 		
-		System.out.println("CUARTA IMPRESION (MATRIZ CON PROBABILIDADES DE TRANSICION)");
-		imprimirMatriz(matriz);
 		return matriz;
 	}
 	
 	///METODOS INCISO A
-	public static void insertarEnMatriz(int entrada, int salida, float[][] matriz) {
+	public void insertarEnMatriz(int entrada, int salida, float[][] matriz) {
 		//NO CONTROLO LIMITES, PERO NO PODRIA PASAR QUE NO ENCUENTRE LA ENTRADA O LA SALIDA
 		int i=1;
-		while (matriz[0][i]!=entrada) {
+		while (matriz[0][i]!=entrada) {///encuentra la columna
 			i++;
 		}
 		int j=1;
-		while (matriz[j][0]!=salida) {
+		while (matriz[j][0]!=salida) {///encunetra la fila
 			j++;
 		}
-		matriz[j][i]=matriz[j][i]+1;
+		matriz[j][i]++;
 	}
 	
-	public static void imprimirMatriz(int[][] matriz) {
+	public void imprimirMatriz(float[][] matriz, String path) {
+		PrintWriter out = null;
+		try {out = new PrintWriter(path);}
+		catch (FileNotFoundException e) {e.printStackTrace();}
 		for (int i=0; i<matriz.length; i++) {
 			for (int j=0; j<matriz[0].length; j++) {
-				System.out.print(matriz[i][j] + " ");
+				out.print(matriz[i][j] + " ");
 			}
-			System.out.println("");
+			out.println("");
 		}
+		out.close();
 	}
-	
-	public static void imprimirMatriz(float[][] matriz) {
-		for (int i=0; i<matriz.length; i++) {
-			for (int j=0; j<matriz[0].length; j++) {
-				System.out.print(matriz[i][j] + " ");
-			}
-			System.out.println("");
-		}
-	}
-	
-	public static TreeMap<Integer, Integer> getDistribucion(int[][] matriz){
-        TreeMap<Integer, Integer> distribucion= new TreeMap<Integer, Integer>();
-        for (int i = 0; i < matriz.length; i++)
-            for (int j = 0; j < matriz[0].length; j++){
-                if(distribucion.containsKey(matriz[i][j]))
-                    distribucion.put(matriz[i][j], distribucion.get(matriz[i][j])+1);///put asigna o remplaza el viejo elemento de la clave si tenia
-                else
-                    distribucion.put(matriz[i][j],1);
-            }
-        return distribucion;
-    }
 	///FIN METODOS INCISO A
 	
 	///METODOS INCISO B
-	public static double calcularRuido(float[][] mat_transicion, TreeMap<Integer, Integer> dist_entrada) {
-		TreeMap<Integer, Float> prob=calcularProb(dist_entrada);
-		TreeMap<Integer, Float> p_acum=calcularAcumulada(prob);
-		int muestras=0;
-		double ruido_ant=-1;
-		double ruido_act=0;
-		System.out.println("INICIO");///PRUEBA
-		while (!converge(ruido_ant, ruido_act) || muestras<min_muestras) {
-			int entrada=generarEntrada(prob, p_acum);
-		    float salida=generarSalida(entrada, mat_transicion);
-		    System.out.println("SALIDA: "+ salida);///PRUEBA
-			muestras++;
-			ruido_ant=ruido_act;
-			ruido_act+=(float)(prob.get(entrada)*(-salida*Math.log10(salida)*3.322))/(float)muestras;///DA CUALQUIER COSA 
-		}
-		return ruido_act;
-	}
-	
-	public static boolean converge(double ant, double act) {
-		return (Math.abs(ant-act)<epsilon);
-	}
-	
-	public static TreeMap<Integer, Float> calcularProb(TreeMap<Integer, Integer> dist_entrada) {
-		TreeMap<Integer, Float> p= new TreeMap<Integer, Float>();
-		int total=0;
-		for(int i: dist_entrada.keySet()) {
-			total+=dist_entrada.get(i);
-		}
-		for(int i: dist_entrada.keySet()) {
-			p.put(i, (float)dist_entrada.get(i)/(float)total);
-		}
-		return p;
-	}
-	
-	public static TreeMap<Integer, Float> calcularAcumulada(TreeMap<Integer, Float> prob) {
-		TreeMap<Integer, Float> a= new TreeMap<Integer, Float>();
-		float total=0;
-		for (int i: prob.keySet()) {
-			total+=prob.get(i);
-			a.put(i, total);
-		}
-		return a;
-	}
-	
-	public static int generarEntrada(TreeMap<Integer, Float> prob, TreeMap<Integer, Float>acumulada) {
-		float c=(float) Math.random();
-		for (int i: acumulada.keySet()) {
-			if (c<=acumulada.get(i)) {
-				return i;
+	public float [][] getTransicionAcumColumna(float[][] matriz){
+		float [][] resolucion= new float[matriz.length-1][matriz[0].length-1];///se achica en uno la fila y la columna porque ya no tiene los valores de entrada y salida
+		for (int i=0; i<resolucion[0].length; i++) {
+			float total=0;
+			for (int j=0; j<resolucion.length; j++) {
+				total+=matriz[j+1][i+1];///los +1 para no tomar la primer fila y primer columna
+				resolucion[j][i]=total;
 			}
 		}
-		System.out.println("c de -1 es "+c);
+		return resolucion;
+	}
+	
+	public float [] getDistrAcum(TreeMap<Integer, Integer> distr){
+		///transforma de un treemap a un arreglo de probabilidades
+		float[] prob=new float[distr.size()];
+		int total=0;
+		int k=0;
+		for(int frec: distr.keySet()) {
+			total+=distr.get(frec);
+			prob[k]=distr.get(frec);
+			k++;
+		}
+		float acum=0;
+		for(int i=0; i<prob.length; i++) {
+			acum+=prob[i]/(float)total;
+			prob[i]=acum;
+		}
+		return prob;
+	}
+	
+	public float getRuido(float [] distrAcumX , float [][] transicionAcumColumna) {
+		///La funcion calcula por muestreo las prob de x y de y dado x, para calcular el ruido
+		int cant_entrada= transicionAcumColumna[0].length;
+		int cant_salida= transicionAcumColumna.length;
+		int muestras = 1;
+		int [] exitosEntrada = new int [cant_entrada]; //La dimension de exitos definida por la cantidad de simbolos de entrada
+		int [][] exitosSalida = new int [cant_salida] [cant_entrada];
+		float ruidoAnt = 0;
+		float ruidoAct = 0;
+		float [] probX = new float [cant_entrada];
+		float [][] probYX = new float [cant_salida][cant_entrada];
+		float [] ruidoxSimb = new float [cant_entrada];
+		
+		do {
+			int entrada = this.generarEntrada(distrAcumX);  //Genera simbolo de entrada
+			exitosEntrada[entrada]++; //Actualiza exito en la entrada
+			ruidoxSimb[entrada] = 0; //Reseteo el ruido en el entrada ya que el valor se pisará
+			int salida  = this.generarSalida(transicionAcumColumna, entrada); // Genera simbolo de salida dado el del entrada
+			exitosSalida[salida][entrada]++; //Actualiza entrada en la salida dada la entrada
+			
+			for(int i = 0; i < probX.length;i++) //Actualiza la probabilidad de la entrada
+				probX[i] = (float) exitosEntrada[i] / (float) muestras;
+			for(int i = 0; i < probYX.length;i++) //Actualiza la probabilidad de salida dada la entrada
+				probYX[i][entrada] = (float) exitosSalida[i][entrada]  / (float) exitosEntrada[entrada];
+				
+			for(int i = 0; i < probYX.length;i++) //Actualizo el ruido por simbolo solo en la columna de la entrada que salio
+				if(probYX[i][entrada] > 0)
+					ruidoxSimb[entrada]+= -( probYX[i][entrada] * (Math.log10(probYX[i][entrada]) / Math.log10(2)));
+			
+			ruidoAnt = ruidoAct;
+			ruidoAct = 0; //Se resetea ya que el valor será pisado
+			for(int i = 0; i < probX.length; i++) //Se calcula el nuevo ruido
+				ruidoAct+= probX[i]*ruidoxSimb[i];
+			muestras++;
+			
+		}
+		while((!converge(ruidoAnt , ruidoAct)) || (muestras <= MIN_MUESTRAS ));
+		
+		return ruidoAct;
+	}
+	
+	public boolean converge(float x , float y) {
+		return (Math.abs(x-y) < ERROR);
+	}
+	
+	public int generarEntrada (float [] distrAcumX) {
+		float r = (float) Math.random();
+		for (int i = 0; i < distrAcumX.length ; i++)
+			if(r < distrAcumX[i])
+				return i;
 		return -1;
 	}
 	
-	public static float generarSalida(int entrada, float[][] matriz) {
-		float c=(float) Math.random();
-		float acum=0;
-		for (int i=1; i<matriz.length; i++) {
-			acum+=matriz[i][entrada];
-			if (c<=acum)
-				return matriz[i][entrada];
-		}
+	public int generarSalida (float [][] transicionAcumColumna , int entrada) {
+		float r = (float) Math.random();
+		for (int i = 0; i < transicionAcumColumna.length; i++)
+			if(r < transicionAcumColumna[i][entrada])
+				return i;
 		return -1;
-	}	
+	}
 	///FIN METODOS INCISO B
-	
-	
 }
