@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -19,6 +21,7 @@ public class Ejercicio3{
 		Formulas f= new Formulas();
 		Imagen imagen= new Imagen();
 		//INCISO A
+		//OBTIENE CODIFICACION DE LA ORIGINAL
 		TreeMap<Integer, Integer> distribucionA= f.getDistribucion(matrizWillOriginal);
 		Nodo arbolHuffmanA = this.getArbolHuffman(distribucionA);
 		TreeMap<Integer, String> codigosA=new TreeMap<Integer, String>();  
@@ -26,58 +29,29 @@ public class Ejercicio3{
 		
 		///GENERA OUTPUT Y CABACERAS CON LAS DISTRIBUCIONES PARA ARMAR EL ARBOL
 		byte[] mensajeComprimido= this.ConvertByteListToPrimitives(this.codificarMensaje(codigosA, matrizWillOriginal));
-		FileOutputStream fosA = new FileOutputStream("Ejercicio3_outputA.bin");
-		fosA.write(mensajeComprimido);
-		fosA.close();//LISTO .BIN
+		this.generarArchivoComprimido("Ejercicio3_outputA.bin", mensajeComprimido, distribucionA);
 		
-		PrintWriter outA = null;
-		try {outA = new PrintWriter("Ejercicio3_outputACabecera.txt");}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		
-		for(Integer i: distribucionA.keySet())
-        	outA.print(i + "," + distribucionA.get(i) + " ");
-		outA.print(".");
-		outA.close();//LISTO .TXT
-		imagen.generarImagen(this.decodoficarMensaje("Ejercicio3_outputA.bin", "Ejercicio3_outputACabecera.txt"), "Ejercicio3_A.bmp");
+		imagen.generarImagen(this.decodificarMensaje("Ejercicio3_outputA.bin"), "Ejercicio3_A.bmp");
 		///FIN INCISO DE A
 		
 		//INCISO B
 		///GENERA OUTPUT Y CABACERAS CON LAS DISTRIBUCIONES PARA ARMAR EL ARBOL
 		mensajeComprimido= this.ConvertByteListToPrimitives(this.codificarMensaje(codigosA, matrizWill1));
-		FileOutputStream fosB = new FileOutputStream("Ejercicio3_outputB.bin");
-		fosB.write(mensajeComprimido);
-		fosB.close();//LISTO .BIN
+		this.generarArchivoComprimido("Ejercicio3_outputB.bin", mensajeComprimido, distribucionA);
 		
-		PrintWriter outB = null;
-		try {outB = new PrintWriter("Ejercicio3_outputBCabecera.txt");}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		
-		for(Integer i: distribucionA.keySet())
-        	outB.print(i + "," + distribucionA.get(i) + " ");
-		outB.print(".");
-		outB.close();//LISTO .TXT
-		imagen.generarImagen(this.decodoficarMensaje("Ejercicio3_outputB.bin", "Ejercicio3_outputBCabecera.txt"), "Ejercicio3_B.bmp");
+		imagen.generarImagen(this.decodificarMensaje("Ejercicio3_outputB.bin"), "Ejercicio3_B.bmp");
 		///FIN INCISO DE B
 		
 		//INCISO C
 		///GENERA OUTPUT Y CABACERAS CON LAS DISTRIBUCIONES PARA ARMAR EL ARBOL
 		mensajeComprimido= this.ConvertByteListToPrimitives(this.codificarMensaje(codigosA, matrizWillej2));
-		FileOutputStream fosC = new FileOutputStream("Ejercicio3_outputC.bin");
-		fosC.write(mensajeComprimido);
-		fosC.close();//LISTO .BIN
+		this.generarArchivoComprimido("Ejercicio3_outputC.bin", mensajeComprimido, distribucionA);
 		
-		PrintWriter outC = null;
-		try {outC = new PrintWriter("Ejercicio3_outputCCabecera.txt");}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		
-		for(Integer i: distribucionA.keySet())
-        	outC.print(i + "," + distribucionA.get(i) + " ");
-		outC.print(".");
-		outC.close();//LISTO .TXT
-		imagen.generarImagen(this.decodoficarMensaje("Ejercicio3_outputC.bin", "Ejercicio3_outputCCabecera.txt"), "Ejercicio3_C.bmp");
+		imagen.generarImagen(this.decodificarMensaje("Ejercicio3_outputC.bin"), "Ejercicio3_C.bmp");
 		///FIN INCISO DE C
 		
 		//INCISO D
+		//OBTIENE LA CODIFICACION DE LA DEL POLICIA
 		TreeMap<Integer, Integer> distribucionD= f.getDistribucion(matrizWillej2);
 		Nodo arbolHuffmanD = this.getArbolHuffman(distribucionD);
 		TreeMap<Integer, String> codigosD=new TreeMap<Integer, String>();  
@@ -85,21 +59,42 @@ public class Ejercicio3{
 		
 		///GENERA OUTPUT Y CABACERAS CON LAS DISTRIBUCIONES PARA ARMAR EL ARBOL
 		mensajeComprimido= this.ConvertByteListToPrimitives(this.codificarMensaje(codigosD, matrizWillej2));
-		FileOutputStream fosD = new FileOutputStream("Ejercicio3_outputD.bin");
-		fosD.write(mensajeComprimido);
-		fosD.close();//LISTO .BIN
+		this.generarArchivoComprimido("Ejercicio3_outputD.bin", mensajeComprimido, distribucionD);
 		
-		PrintWriter outD = null;
-		try {outD = new PrintWriter("Ejercicio3_outputDCabecera.txt");}
-		catch (FileNotFoundException e) {e.printStackTrace();}
-		
-		for(Integer i: distribucionD.keySet())
-        	outD.print(i + "," + distribucionD.get(i) + " ");
-		outD.print(".");
-		outD.close();//LISTO .TXT
-		imagen.generarImagen(this.decodoficarMensaje("Ejercicio3_outputD.bin", "Ejercicio3_outputDCabecera.txt"), "Ejercicio3_D.bmp");
+		imagen.generarImagen(this.decodificarMensaje("Ejercicio3_outputD.bin"), "Ejercicio3_D.bmp");
 		///FIN INCISO DE D
 		
+		///INCISO E
+		PrintWriter out = null;
+		try {out = new PrintWriter("Ejercicio3_E.txt");}
+		catch (FileNotFoundException e) {e.printStackTrace();}
+		
+		File file = new File("Ejercicio3_outputA.bin");
+		long tamComprimido = file.length();
+		file = new File("ImagenesWill"+ File.separator +"Will(Original).bmp");
+		long tamOriginal = file.length();
+		out.println("Tasa compresion para inciso A es "+((float)tamOriginal/tamComprimido));
+		
+		file = new File("Ejercicio3_outputB.bin");
+		tamComprimido = file.length();
+		file = new File("ImagenesWill"+ File.separator +"Will_1.bmp");
+		tamOriginal = file.length();
+		out.println("Tasa compresion para inciso B es "+((float)tamOriginal/tamComprimido));
+		
+		file = new File("Ejercicio3_outputC.bin");
+		tamComprimido = file.length();
+		file = new File("ImagenesWill"+ File.separator +"Will_ej2.bmp");
+		tamOriginal = file.length();
+		out.println("Tasa compresion para inciso C es "+((float)tamOriginal/tamComprimido));
+		
+		file = new File("Ejercicio3_outputD.bin");
+		tamComprimido = file.length();
+		file = new File("ImagenesWill"+ File.separator +"Will_ej2.bmp");
+		tamOriginal = file.length();
+		out.println("Tasa compresion para inciso D es "+((float)tamOriginal/tamComprimido));
+		
+		out.close();
+		///FIN INCISO E
 	}
 
 	public Nodo getArbolHuffman(TreeMap<Integer, Integer> probabilidades){
@@ -176,19 +171,53 @@ public class Ejercicio3{
 		return ret;
 	}
 	
-	public int[][] decodoficarMensaje(String dirPathCompact, String dirCabecera) {///DECODIFICADOR
+	public void generarArchivoComprimido(String path, byte[] mensajeComprimido, TreeMap<Integer, Integer> distribucionA) throws IOException {
+		FileOutputStream fosA = new FileOutputStream(path);
+		fosA.write(distribucionA.size()*4);///Primer byte contiene longitud del header
+		for(int color: distribucionA.keySet()) {///siempre se escribe en [-128,127]
+			fosA.write(color);///escribe el color (1 byte, si es negativo entonces hay que sumarle 256)
+			String frecuenciaBin= Integer.toBinaryString(distribucionA.get(color));
+			///divido la frecuencia en 3 bytes
+			byte buffer1 = 0;
+			byte buffer2= 0;
+			byte buffer3= 0;
+			byte mask = (byte) (1 << 7); // mask: 10000000
+			for(int i=0; i<frecuenciaBin.length(); i++) {
+				if(i<frecuenciaBin.length()) {
+					buffer3 = (byte) (buffer3 << 1);
+					if ((buffer2 & mask) == mask)
+						buffer3 = (byte) (buffer3 | 1);
+					buffer2 = (byte) (buffer2 << 1);
+					if ((buffer1 & mask) == mask)
+						buffer2 = (byte) (buffer2 | 1);
+				}
+				buffer1 = (byte) (buffer1 << 1);
+				if (frecuenciaBin.charAt(i) == '1')
+					buffer1 = (byte) (buffer1 | 1);
+			}
+			fosA.write(buffer3);
+			fosA.write(buffer2);
+			fosA.write(buffer1);
+		}//(4 bytes por cada color)
+		fosA.write(mensajeComprimido);///el resto de los bytes son la imagen codificada
+		fosA.close();
+	}
+	
+	public int[][] decodificarMensaje(String dirPathCompact) {///DECODIFICADOR
 		int[][] mensaje= new int[1700][1310];//inicializacion de la matriz resultado
 		
 		try {
-			Nodo raizArbolHuffman = this.getArbolHuffman(this.leerCabecera(dirCabecera));
-			byte[] inputSequence = Files.readAllBytes(new File(dirPathCompact).toPath());
+			byte[] inputSequence = Files.readAllBytes(new File(dirPathCompact).toPath());///obtiene un arreglo de bytes del .bin
+			Nodo raizArbolHuffman = this.getArbolHuffman(this.leerCabecera(inputSequence));///genera el arbol con la cabecera del arch
+			
+			///comienza el decode
 			byte mask = (byte) (1 << 7); // mask: 10000000
 			int bufferPos = 0;
 			
 			Nodo puntAux= raizArbolHuffman;
-			int indiceMensaje=0;
-			byte buffer = inputSequence[0];
-			for(int i=0;i<mensaje.length; i++)
+			int indiceMensaje=inputSequence[0]+1;///comienzo del mensaje codificado
+			byte buffer = inputSequence[indiceMensaje];
+			for(int i=0;i<mensaje.length; i++)///i arranca desde longitud del header +1
 				for(int j=0; j<mensaje[0].length; j++){
 					boolean cargoColor=false;
 					while (!cargoColor) {
@@ -221,23 +250,17 @@ public class Ejercicio3{
 		
 		return mensaje;
 	}
-
 	
-	public TreeMap<Integer, Integer> leerCabecera(String path) throws IOException{
-		List<String> s= Files.readAllLines( new File(path).toPath() ); //s.get(0) es el unico string
+	public TreeMap<Integer, Integer> leerCabecera(byte[] inputSequence) {
 		TreeMap<Integer, Integer> distribucion= new TreeMap<Integer, Integer>();
-		int i=0;
-		while (s.get(0).charAt(i) != '.') {//pregunta si no termino
-			int j=i;
-			while(s.get(0).charAt(j) != ',')//a izq color, a der frecuencia
-				j++;
-			Integer color = Integer.valueOf(s.get(0).substring(i, j));
-			i=j+1;
-			while(s.get(0).charAt(j) != ' ')
-				j++;
-			Integer frecuencia = Integer.valueOf(s.get(0).substring(i, j));
-			distribucion.put(color, frecuencia);
-			i=j+1;
+		for(int i=1; i<inputSequence[0]+1;i+=4) {///i color, de i+1 a i+3 frecuencia
+			String s1 = String.format("%8s", Integer.toBinaryString(inputSequence[i+1] & 0xFF)).replace(' ', '0');
+			String s2 = String.format("%8s", Integer.toBinaryString(inputSequence[i+2] & 0xFF)).replace(' ', '0');
+			String s3 = String.format("%8s", Integer.toBinaryString(inputSequence[i+3] & 0xFF)).replace(' ', '0');
+			if(inputSequence[i]<0)
+				distribucion.put(inputSequence[i]+256, Integer.parseInt(s1+s2+s3,2));
+			else
+				distribucion.put((int)inputSequence[i], Integer.parseInt(s1+s2+s3,2));
 		}
 		return distribucion;
 	}

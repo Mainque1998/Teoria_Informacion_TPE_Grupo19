@@ -33,7 +33,7 @@ public class Imagen {
     }
 
     public void generarImagen(int [] [] matriz, String path) {
-    	BufferedImage img = new BufferedImage(1310, 1700, BufferedImage.TYPE_INT_RGB);
+    	BufferedImage img = new BufferedImage(1310, 1700, BufferedImage.TYPE_BYTE_INDEXED);
 		for(int x = 0; x < img.getWidth(); x++) 
 		   for(int y = 0; y < img.getHeight(); y++) {
 			   Color color = new Color (matriz[y][x] , matriz[y][x], matriz[y][x]);
