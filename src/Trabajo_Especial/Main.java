@@ -57,11 +57,11 @@ public class Main {
         e1.ejecutar(matrizWillOriginal, matrizWill1, matrizWill2, matrizWill3, matrizWill4, matrizWill5);
         
         Ejercicio2 e2= new Ejercicio2();
-        e2.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar por parametro el resultado de ejercicio1 y no "matrizWill1"
+        e2.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);
         
         Ejercicio3 e3= new Ejercicio3();
-        try {///AGREGADO PARA EL ARCH
-			e3.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);///Estaria bueno pasar por parametro el resultado de ejercicio1 y no "matrizWill1"
+        try {
+			e3.ejecutar(matrizWillOriginal, matrizWill1, matrizWillej2);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

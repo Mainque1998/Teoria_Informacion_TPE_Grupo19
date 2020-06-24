@@ -8,40 +8,49 @@ public class Ejercicio4 {
 	
 	public Ejercicio4() {}
 
-	private final double ERROR = 0.0001;
-	private final int MIN_MUESTRAS = 10000;
+	private final double ERROR = 0.000001;
+	private final int MIN_MUESTRAS = 1000;
+	private final int MILESTONE=100;
 	
 	public void ejecutar(int[][] matrizIn, int[][] matrizC1, int[][] matrizC2, int[][] matrizC3) {
 		Formulas f= new Formulas();
 		TreeMap<Integer, Integer> dIn = f.getDistribucion(matrizIn);
 		PrintWriter out = null;
-		try {out = new PrintWriter("Ejercicio4_IncisoB.txt");}
+		PrintWriter outEvolucionError = null;
+		try {out = new PrintWriter("Ejercicio4_IncisoB.txt");
+			outEvolucionError = new PrintWriter("Ejercicio4_IncisoB_EvolucionError.txt");
+		}
 		catch (FileNotFoundException e) {e.printStackTrace();}
 		
-		///canal 2
+		///CANAL 2
 		TreeMap<Integer, Integer> dOut = f.getDistribucion(matrizC1);
 		float[][] matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC1, dOut);
-		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C2.txt");///GENERA ARCH MATRIZ
-		out.println("Ruido del canal 2: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C2.txt");///genera arch matriz
+		outEvolucionError.println("Evolucion del error Canal 2:");
+		out.println("Ruido del canal 2: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans), outEvolucionError));
 		
-		///canal 8
+		///CANAL 8
 		dOut = f.getDistribucion(matrizC1);
 		matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC2, dOut);
-		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C8.txt");///GENERA ARCH MATRIZ
-		out.println("Ruido del canal 8: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C8.txt");//genera arch matriz
+		outEvolucionError.println("Evolucion del error Canal 8:");
+		out.println("Ruido del canal 8: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans), outEvolucionError));
 		
-		///canal 10
+		///CANAL 10
 		f.getDistribucion(matrizC1);
 		matrizTrans= generarMatrizTransicional(matrizIn, dIn, matrizC3, dOut);
-		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C10.txt");///GENERA ARCH MATRIZ
-		out.println("Ruido del canal 10: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans)));			
+		imprimirMatriz(matrizTrans, "Ejercicio4_Matriz_C10.txt");//genera arch matriz
+		outEvolucionError.println("Evolucion del error Canal 10:");
+		out.println("Ruido del canal 10: "+ getRuido(this.getDistrAcum(dIn), this.getTransicionAcumColumna(matrizTrans), outEvolucionError));			
 		
+		///CIERRE DE ARCHIVOS
+		outEvolucionError.close();
 		out.close();
 	}
 	
-	public float[][] generarMatrizTransicional(int[][] mat_entrada, TreeMap<Integer, Integer> dist_entrada, int[][] mat_salida, TreeMap<Integer, Integer> dist_salida) {
+	private float[][] generarMatrizTransicional(int[][] mat_entrada, TreeMap<Integer, Integer> dist_entrada, int[][] mat_salida, TreeMap<Integer, Integer> dist_salida) {
 		
-		//INICIALIZO LA MATRIZ CON TODOS 0
+		///INICIALIZO LA MATRIZ CON TODOS 0
 		float[][] matriz = new float[dist_salida.size()+1][dist_entrada.size()+1];
 		for (int i=0; i<dist_salida.size()+1; i++) {
 			for (int j=0; j<dist_entrada.size()+1; j++) {
@@ -49,7 +58,7 @@ public class Ejercicio4 {
 			}
 		}
 		
-		//PONGO TODOS LOS TONOS DE COLORES DE LAS IMAGENES EN LA 1ER COLUMNA Y EN LA 1ER FILA DE LA MATRIZ
+		///PONGO TODOS LOS TONOS DE COLORES DE LAS IMAGENES EN LA 1ER COLUMNA Y EN LA 1ER FILA DE LA MATRIZ
 		int i=1;
 		for (int e: dist_entrada.keySet()) {
 			matriz[0][i]=e;
@@ -61,7 +70,7 @@ public class Ejercicio4 {
 			j++;
 		}
 		
-		//LLENO LA MATRIZ
+		///LLENO LA MATRIZ
 		for (i=0; i<mat_entrada.length; i++) {
 			for (j=0; j<mat_entrada[0].length; j++) {
 				int entrada=mat_entrada[i][j];
@@ -70,35 +79,35 @@ public class Ejercicio4 {
 			}
 		}
 		
-		//DIVIDO SOBRE LA CANTIDAD TOTAL
+		///DIVIDO SOBRE LA CANTIDAD TOTAL
 		for (i=1; i<matriz[0].length; i++) {
 			int total = 0;
 			for (j=1; j<matriz.length; j++) {
 				total+=matriz[j][i];
-			}///consigue la sumatoria de la columna
+			}//consigue la sumatoria de la columna
 			for (j=1; j<matriz.length; j++) {
 				matriz[j][i]=(float)matriz[j][i]/total;
-			}///divide cada termino por el total de la columna
+			}//divide cada termino por el total de la columna
 		}
 		
 		return matriz;
 	}
 	
 	///METODOS INCISO A
-	public void insertarEnMatriz(int entrada, int salida, float[][] matriz) {
+	private void insertarEnMatriz(int entrada, int salida, float[][] matriz) {
 		//NO CONTROLO LIMITES, PERO NO PODRIA PASAR QUE NO ENCUENTRE LA ENTRADA O LA SALIDA
 		int i=1;
-		while (matriz[0][i]!=entrada) {///encuentra la columna
+		while (matriz[0][i]!=entrada) {//encuentra la columna
 			i++;
 		}
 		int j=1;
-		while (matriz[j][0]!=salida) {///encunetra la fila
+		while (matriz[j][0]!=salida) {//encunetra la fila
 			j++;
 		}
 		matriz[j][i]++;
 	}
 	
-	public void imprimirMatriz(float[][] matriz, String path) {
+	private void imprimirMatriz(float[][] matriz, String path) {
 		PrintWriter out = null;
 		try {out = new PrintWriter(path);}
 		catch (FileNotFoundException e) {e.printStackTrace();}
@@ -113,20 +122,19 @@ public class Ejercicio4 {
 	///FIN METODOS INCISO A
 	
 	///METODOS INCISO B
-	public float [][] getTransicionAcumColumna(float[][] matriz){
-		float [][] resolucion= new float[matriz.length-1][matriz[0].length-1];///se achica en uno la fila y la columna porque ya no tiene los valores de entrada y salida
+	private float [][] getTransicionAcumColumna(float[][] matriz){
+		float [][] resolucion= new float[matriz.length-1][matriz[0].length-1];//se achica en uno la fila y la columna porque ya no tiene los valores de entrada y salida
 		for (int i=0; i<resolucion[0].length; i++) {
 			float total=0;
 			for (int j=0; j<resolucion.length; j++) {
-				total+=matriz[j+1][i+1];///los +1 para no tomar la primer fila y primer columna
+				total+=matriz[j+1][i+1];//los +1 para no tomar la primer fila y primer columna
 				resolucion[j][i]=total;
 			}
 		}
 		return resolucion;
 	}
 	
-	public float [] getDistrAcum(TreeMap<Integer, Integer> distr){
-		///transforma de un treemap a un arreglo de probabilidades
+	private float [] getDistrAcum(TreeMap<Integer, Integer> distr){//transforma de un treemap a un arreglo de probabilidades
 		float[] prob=new float[distr.size()];
 		int total=0;
 		int k=0;
@@ -143,8 +151,8 @@ public class Ejercicio4 {
 		return prob;
 	}
 	
-	public float getRuido(float [] distrAcumX , float [][] transicionAcumColumna) {
-		///La funcion calcula por muestreo las prob de x y de y dado x, para calcular el ruido
+	private float getRuido(float [] distrAcumX , float [][] transicionAcumColumna, PrintWriter out) {
+		//calcula por muestreo las prob de x y de y dado x, para calcular el ruido
 		int cant_entrada= transicionAcumColumna[0].length;
 		int cant_salida= transicionAcumColumna.length;
 		int muestras = 1;
@@ -176,19 +184,22 @@ public class Ejercicio4 {
 			ruidoAct = 0; //Se resetea ya que el valor será pisado
 			for(int i = 0; i < probX.length; i++) //Se calcula el nuevo ruido
 				ruidoAct+= probX[i]*ruidoxSimb[i];
+			if((muestras % MILESTONE == 0) || (muestras == 1)) {
+				out.println("Iteracion: "+muestras+", Error de:"+Math.abs(ruidoAnt-ruidoAct));
+			}
 			muestras++;
-			
 		}
 		while((!converge(ruidoAnt , ruidoAct)) || (muestras <= MIN_MUESTRAS ));
-		
+		out.println("Ultima iteracion: "+muestras+", Error de:"+Math.abs(ruidoAnt-ruidoAct));
+		out.println("");
 		return ruidoAct;
 	}
 	
-	public boolean converge(float x , float y) {
+	private boolean converge(float x , float y) {
 		return (Math.abs(x-y) < ERROR);
 	}
 	
-	public int generarEntrada (float [] distrAcumX) {
+	private int generarEntrada (float [] distrAcumX) {
 		float r = (float) Math.random();
 		for (int i = 0; i < distrAcumX.length ; i++)
 			if(r < distrAcumX[i])
@@ -196,7 +207,7 @@ public class Ejercicio4 {
 		return -1;
 	}
 	
-	public int generarSalida (float [][] transicionAcumColumna , int entrada) {
+	private int generarSalida (float [][] transicionAcumColumna , int entrada) {
 		float r = (float) Math.random();
 		for (int i = 0; i < transicionAcumColumna.length; i++)
 			if(r < transicionAcumColumna[i][entrada])

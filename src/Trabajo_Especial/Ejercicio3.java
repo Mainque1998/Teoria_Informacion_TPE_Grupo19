@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,14 +15,15 @@ public class Ejercicio3{
 
 	public Ejercicio3() {}
 		
-	public void ejecutar(int [][]matrizWillOriginal, int [][]matrizWill1, int [][] matrizWillej2) throws IOException{///AGREGADO PARA EL ARCH
+	public void ejecutar(int [][]matrizWillOriginal, int [][]matrizWill1, int [][] matrizWillej2) throws IOException{
 		Formulas f= new Formulas();
 		Imagen imagen= new Imagen();
-		//INCISO A
-		//OBTIENE CODIFICACION DE LA ORIGINAL
+		
+		///INCISO A
+		///OBTIENE CODIFICACION DE LA ORIGINAL
 		TreeMap<Integer, Integer> distribucionA= f.getDistribucion(matrizWillOriginal);
 		Nodo arbolHuffmanA = this.getArbolHuffman(distribucionA);
-		TreeMap<Integer, String> codigosA=new TreeMap<Integer, String>();  
+		TreeMap<Integer, String> codigosA= new TreeMap<Integer, String>();  
 		this.getCodigos(arbolHuffmanA, "", codigosA);
 		
 		///GENERA OUTPUT Y CABACERAS CON LAS DISTRIBUCIONES PARA ARMAR EL ARBOL
@@ -97,23 +96,23 @@ public class Ejercicio3{
 		///FIN INCISO E
 	}
 
-	public Nodo getArbolHuffman(TreeMap<Integer, Integer> probabilidades){
+	private Nodo getArbolHuffman(TreeMap<Integer, Integer> probabilidades){
         PriorityQueue<Nodo> cola = new PriorityQueue<Nodo>(probabilidades.size(), new Comparador());
         for (Integer p: probabilidades.keySet()){
             Nodo nuevoNodo = new Nodo();
             nuevoNodo.setColor(p); 
-            nuevoNodo.setProbabilidad(probabilidades.get(p)); 
+            nuevoNodo.setProbabilidad(probabilidades.get(p));//no usamos probabilidades, usamos frecuencias, el resultado es el mismo
             nuevoNodo.setIzq(null);
             nuevoNodo.setDer(null); 
             cola.add(nuevoNodo);
         } 
         Nodo raiz = null; 
         while (cola.size() > 1) { 
-            Nodo primero = cola.peek(); //OBTENGO EL PRIMERO
-            cola.poll(); //REMUEVO EL PRIMERO
+            Nodo primero = cola.peek();//obtengo el primero
+            cola.poll();//remuevo el primero
             Nodo segundo = cola.peek(); 
             cola.poll(); 
-            Nodo n = new Nodo(); //JUNTO LOS DOS NODOS DE MENOR PROBABILIDAD
+            Nodo n = new Nodo();//junto los dos nodos de menor probabilidad
             n.setProbabilidad(primero.getProbabilidad() + segundo.getProbabilidad()); 
             n.setColor(-1);
             n.setIzq(primero); 
@@ -125,7 +124,7 @@ public class Ejercicio3{
         return raiz;
     } 
 	
-	public void getCodigos(Nodo raiz, String s, TreeMap<Integer, String> solucion){///OBTIENE LOS CODIGOS DEL ARBOL
+	private void getCodigos(Nodo raiz, String s, TreeMap<Integer, String> solucion){//obtiene los codigos del arbol
 		if (raiz.izq == null && raiz.der == null) {
 			solucion.put(raiz.color, s);
         }
@@ -135,7 +134,7 @@ public class Ejercicio3{
 		}
     }
 	
-	public List<Byte> codificarMensaje(TreeMap<Integer, String> codigos, int [][]mensaje) {///CODIFICADOR
+	private List<Byte> codificarMensaje(TreeMap<Integer, String> codigos, int [][]mensaje) {
 		List<Byte> result = new ArrayList<Byte>();
 		byte buffer = 0;
 		int bufferPos = 0;			
@@ -157,12 +156,12 @@ public class Ejercicio3{
     		}
     	if (bufferPos != 0) {
     		buffer = (byte) (buffer << 8-bufferPos);
-			result.add(buffer);///por si el ultimo buffer no se llego a completar
+			result.add(buffer);//por si el ultimo buffer no se llego a completar
     	}
 		return result;
 	}
 	
-	public byte[] ConvertByteListToPrimitives(List<Byte> input) {///AGREGADO PARA EL ARCH
+	private byte[] ConvertByteListToPrimitives(List<Byte> input) {
 		byte[] ret = new byte[input.size()];
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = input.get(i);
@@ -171,13 +170,13 @@ public class Ejercicio3{
 		return ret;
 	}
 	
-	public void generarArchivoComprimido(String path, byte[] mensajeComprimido, TreeMap<Integer, Integer> distribucionA) throws IOException {
+	private void generarArchivoComprimido(String path, byte[] mensajeComprimido, TreeMap<Integer, Integer> distribucionA) throws IOException {
 		FileOutputStream fosA = new FileOutputStream(path);
-		fosA.write(distribucionA.size()*4);///Primer byte contiene longitud del header
-		for(int color: distribucionA.keySet()) {///siempre se escribe en [-128,127]
-			fosA.write(color);///escribe el color (1 byte, si es negativo entonces hay que sumarle 256)
+		fosA.write(distribucionA.size()*4);//escribe en el primer byte la longitud del header
+		for(int color: distribucionA.keySet()) {//siempre se escribe en [-128,127]
+			fosA.write(color);//escribe el color (1 byte, si es negativo entonces hay que sumarle 256)
 			String frecuenciaBin= Integer.toBinaryString(distribucionA.get(color));
-			///divido la frecuencia en 3 bytes
+			//divido la frecuencia en 3 bytes
 			byte buffer1 = 0;
 			byte buffer2= 0;
 			byte buffer3= 0;
@@ -195,32 +194,33 @@ public class Ejercicio3{
 				if (frecuenciaBin.charAt(i) == '1')
 					buffer1 = (byte) (buffer1 | 1);
 			}
+			//escrbio los 3 bytes de frecuencia
 			fosA.write(buffer3);
 			fosA.write(buffer2);
 			fosA.write(buffer1);
-		}//(4 bytes por cada color)
-		fosA.write(mensajeComprimido);///el resto de los bytes son la imagen codificada
+		}//(entonces tengo 4 bytes por cada color)
+		fosA.write(mensajeComprimido);//el resto de los bytes son la imagen codificada
 		fosA.close();
 	}
 	
-	public int[][] decodificarMensaje(String dirPathCompact) {///DECODIFICADOR
+	private int[][] decodificarMensaje(String dirPathCompact) {
 		int[][] mensaje= new int[1700][1310];//inicializacion de la matriz resultado
 		
 		try {
-			byte[] inputSequence = Files.readAllBytes(new File(dirPathCompact).toPath());///obtiene un arreglo de bytes del .bin
-			Nodo raizArbolHuffman = this.getArbolHuffman(this.leerCabecera(inputSequence));///genera el arbol con la cabecera del arch
+			byte[] inputSequence = Files.readAllBytes(new File(dirPathCompact).toPath());//obtiene un arreglo de bytes del .bin
+			Nodo raizArbolHuffman = this.getArbolHuffman(this.leerCabecera(inputSequence));//genera el arbol con la cabecera del arch
 			
-			///comienza el decode
-			byte mask = (byte) (1 << 7); // mask: 10000000
+			//comienza el decode
+			byte mask = (byte) (1 << 7);//mask: 10000000
 			int bufferPos = 0;
 			
 			Nodo puntAux= raizArbolHuffman;
-			int indiceMensaje=inputSequence[0]+1;///comienzo del mensaje codificado
+			int indiceMensaje=inputSequence[0]+1;//comienzo del mensaje codificado (lo anterior es cabecera)
 			byte buffer = inputSequence[indiceMensaje];
-			for(int i=0;i<mensaje.length; i++)///i arranca desde longitud del header +1
+			for(int i=0;i<mensaje.length; i++)
 				for(int j=0; j<mensaje[0].length; j++){
 					boolean cargoColor=false;
-					while (!cargoColor) {
+					while (!cargoColor) {//hasta que no carga el color en i,j, no avanza en la matriz
 						
 						if ((buffer & mask) == mask)//si es 1
 			                puntAux = puntAux.getDer();
@@ -251,9 +251,9 @@ public class Ejercicio3{
 		return mensaje;
 	}
 	
-	public TreeMap<Integer, Integer> leerCabecera(byte[] inputSequence) {
+	private TreeMap<Integer, Integer> leerCabecera(byte[] inputSequence) {
 		TreeMap<Integer, Integer> distribucion= new TreeMap<Integer, Integer>();
-		for(int i=1; i<inputSequence[0]+1;i+=4) {///i color, de i+1 a i+3 frecuencia
+		for(int i=1; i<inputSequence[0]+1;i+=4) {//i color, de i+1 a i+3 frecuencia
 			String s1 = String.format("%8s", Integer.toBinaryString(inputSequence[i+1] & 0xFF)).replace(' ', '0');
 			String s2 = String.format("%8s", Integer.toBinaryString(inputSequence[i+2] & 0xFF)).replace(' ', '0');
 			String s3 = String.format("%8s", Integer.toBinaryString(inputSequence[i+3] & 0xFF)).replace(' ', '0');
@@ -310,7 +310,6 @@ class Nodo {
 class Comparador implements Comparator<Nodo> { 
     public int compare(Nodo x, Nodo y) 
     { 
-  
         return x.probabilidad - y.probabilidad; 
     } 
 }

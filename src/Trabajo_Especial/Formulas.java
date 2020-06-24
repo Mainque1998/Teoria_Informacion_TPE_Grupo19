@@ -4,7 +4,7 @@ import java.util.TreeMap;
 
 public class Formulas {
 	
-	public Formulas(){}
+	public Formulas(){}///CLASE PARA CALCULOS MATEMATICOS
 
     public double getMedia(int [][] imagen) {
     	double acum=0;
@@ -20,7 +20,7 @@ public class Formulas {
         for (int i = 0; i < matriz.length; i++)
             for (int j = 0; j < matriz[0].length; j++){
             	if(distribucion.containsKey(matriz[i][j]))
-            		distribucion.put(matriz[i][j], distribucion.get(matriz[i][j])+1);///put asigna o remplaza el viejo elemento de la clave si tenia
+            		distribucion.put(matriz[i][j], distribucion.get(matriz[i][j])+1);//put asigna o remplaza el viejo elemento de la clave si tenia
             	else
             		distribucion.put(matriz[i][j],1);
             }
