@@ -2,6 +2,7 @@ package Trabajo_Especial;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.TreeMap;
 
 public class Ejercicio4 {
@@ -108,6 +109,28 @@ public class Ejercicio4 {
 	}
 	
 	private void imprimirMatriz(float[][] matriz, String path) {
+		///ABRO ARCH
+		PrintWriter out = null;
+		try {out = new PrintWriter(path);}
+		catch (FileNotFoundException e) {e.printStackTrace();}
+		out.println("Matriz de transicion, las entradas y salidas son:");
+		///IMPRIME LOS COLORES
+		for (int i=1; i<matriz.length; i++) {
+			out.print(new BigDecimal(String.valueOf(matriz[i][0])).setScale(0, BigDecimal.ROUND_FLOOR) + ", ");
+		}
+		out.println("");
+		out.println("Matriz (con redondeo a 5 decimales):");
+		///IMPRIME LA MATRIZ (sin los valores de entrada y salida)
+		for (int i=1; i<matriz.length; i++) {//en 1 para no imprimir las salidas
+			for (int j=1; j<matriz[0].length; j++)//en 1 para no imprimir las entradas
+				out.print("|" + new BigDecimal(String.valueOf(matriz[i][j])).setScale(5, BigDecimal.ROUND_FLOOR));//imprimos solo 5 decimales para que sea mas leible
+			out.println("|");
+		}
+		///CIERRO ARCH
+		out.close();
+	}
+	
+	/*FLETARprivate void imprimirMatriz(float[][] matriz, String path) {
 		PrintWriter out = null;
 		try {out = new PrintWriter(path);}
 		catch (FileNotFoundException e) {e.printStackTrace();}
@@ -118,7 +141,7 @@ public class Ejercicio4 {
 			out.println("");
 		}
 		out.close();
-	}
+	}*/
 	///FIN METODOS INCISO A
 	
 	///METODOS INCISO B
