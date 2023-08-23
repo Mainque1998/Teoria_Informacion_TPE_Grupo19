@@ -1,5 +1,5 @@
-# Teoria_Informacion_TPE_Grupo19
+# Hello
+This is a project we did for Information Theory subject of the systems engineering degree in 2020.
+It's an application to work with images, making compressions, decompressions and obtaining various metrics.
 
-Repositorio para el trabajo practico especial de Teoria de la Informacion - 2020
-
-Saludos.
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
